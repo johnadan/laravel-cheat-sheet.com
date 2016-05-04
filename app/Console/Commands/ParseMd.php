@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use League\CommonMark\Converter;
+use \Htmldom;
 
 /**
  * Parse MD files from GitHub.
@@ -29,6 +30,8 @@ class ParseMd extends Command
 
     protected $filenames;
 
+    protected $repository;
+
     /**
      * Create a new command instance.
      *
@@ -43,6 +46,8 @@ class ParseMd extends Command
         $this->languages = config('csheet.languages');
 
         $this->filenames = config('csheet.filenames');
+
+        $this->repository = config('csheet.repository');
     }
 
     /**
@@ -85,18 +90,42 @@ class ParseMd extends Command
      */
     private function parseOneFile($filename, $language)
     {
+        // Get MD file contents.
         $md = $this->getMdFileContents($filename, $language);
 
-        //$converter->convertToHtml('')
+        // Convert MD to HTML.
+        $sourceHtml = $this->converter->convertToHtml($md);
+
+        $htmlExploded = explode('<hr />', $sourceHtml);
+
+        $clausesArray = $this->parseClauses($htmlExploded[0]);
+
+        //dd($clausesArray);
     }
 
     /**
      * Get MD file contents from GitHub.
      *
-     * @return mixed
+     * @return string
      */
     private function getMdFileContents($filename, $language)
     {
-        echo $language.' - '.$filename.'<br />';
+        return file_get_contents($this->repository.$language.'/'.$filename.'.md');
+    }
+
+    private function parseClauses($htmlList)
+    {
+        $html = new Htmldom($htmlList);
+
+        $clausesArray = [];
+
+        $clausesArray = $html->find('p a');
+
+        foreach ($clausesArray as $clauseLink) {
+            $clause = new Htmldom($clauseLink);
+            echo $clause->find('a')[0]->innertext.' - ';
+        }
+
+        return $clausesArray;
     }
 }

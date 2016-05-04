@@ -2,7 +2,7 @@
 
 return [
 
-	'repository' => 'https://github.com/alexeymezenin/laravel-cheat-sheet/tree/master/',
+	'repository' => 'https://raw.githubusercontent.com/alexeymezenin/laravel-cheat-sheet/master/',
 	
 	'filenames' => [
 		'Blade%20Templates',
