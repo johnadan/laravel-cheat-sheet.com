@@ -25,6 +25,10 @@ class ParseMd extends Command
      */
     protected $description = 'Parse MD files from GitHub';
 
+    protected $languages;
+
+    protected $filenames;
+
     /**
      * Create a new command instance.
      *
@@ -35,6 +39,10 @@ class ParseMd extends Command
         parent::__construct();
 
         $this->converter = $converter;
+
+        $this->languages = config('csheet.languages');
+
+        $this->filenames = config('csheet.filenames');
     }
 
     /**
@@ -55,22 +63,26 @@ class ParseMd extends Command
      */
     private function parseMdFiles()
     {
-        $languages = config('csheet.languages');
-
-        foreach ($languages as $language) {
+        foreach ($this->languages as $language) {
             $this->parseOneLanguage($language);
         }
     }
 
+    /**
+     * Parse files of given language.
+     *
+     */
     private function parseOneLanguage($language)
     {
-        $filenames = config('csheet.filenames');
-
-        foreach ($filenames as $filename) {
+        foreach ($this->filenames as $filename) {
             $this->parseOneFile($filename, $language);
         }
     }
 
+    /**
+     * Parse one file of given language.
+     *
+     */
     private function parseOneFile($filename, $language)
     {
         $md = $this->getMdFileContents($filename, $language);
@@ -78,6 +90,11 @@ class ParseMd extends Command
         //$converter->convertToHtml('')
     }
 
+    /**
+     * Get MD file contents from GitHub.
+     *
+     * @return mixed
+     */
     private function getMdFileContents($filename, $language)
     {
         echo $language.' - '.$filename.'<br />';
