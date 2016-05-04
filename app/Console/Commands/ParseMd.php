@@ -4,6 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
+/**
+ * Parse MD files from GitHub.
+ */
 class ParseMd extends Command
 {
     /**
@@ -18,7 +21,7 @@ class ParseMd extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Parse MD files from GitHub';
 
     /**
      * Create a new command instance.
@@ -37,6 +40,28 @@ class ParseMd extends Command
      */
     public function handle()
     {
-        //
+        parseMdFiles();
+
+    }
+
+    /**
+     * Parse all MD files to DB.
+     *
+     * @return mixed
+     */
+    private function parseMdFiles(){
+        $languages = config('csheet.languages');
+
+        foreach ($languages as $language) {
+            $parseOneMdFile($language);
+        }
+    }
+
+    private function parseOneLanguageMdFiles($language){
+        $filenames = config('csheet.filenames');
+
+        foreach ($filenames as $filename) {
+            // concatinate all md files
+        }
     }
 }
