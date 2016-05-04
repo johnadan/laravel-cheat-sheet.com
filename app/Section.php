@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Clause extends Model
+class Section extends Model
 {
     public $timestamps = false;
-    
-    public function sections()
+
+    public function clauses()
     {
-    	return $this->belongsTo('App\Section');
+    	return $this->hasMany('App\Clause');
     }
 }

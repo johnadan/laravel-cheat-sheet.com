@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
+use League\CommonMark\Converter;
 
 /**
  * Parse MD files from GitHub.
@@ -28,9 +30,11 @@ class ParseMd extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Converter $converter)
     {
         parent::__construct();
+
+        $this->converter = $converter;
     }
 
     /**
@@ -40,7 +44,7 @@ class ParseMd extends Command
      */
     public function handle()
     {
-        parseMdFiles();
+        $this->parseMdFiles();
 
     }
 
@@ -49,19 +53,33 @@ class ParseMd extends Command
      *
      * @return mixed
      */
-    private function parseMdFiles(){
+    private function parseMdFiles()
+    {
         $languages = config('csheet.languages');
 
         foreach ($languages as $language) {
-            $parseOneMdFile($language);
+            $this->parseOneLanguage($language);
         }
     }
 
-    private function parseOneLanguageMdFiles($language){
+    private function parseOneLanguage($language)
+    {
         $filenames = config('csheet.filenames');
 
         foreach ($filenames as $filename) {
-            // concatinate all md files
+            $this->parseOneFile($filename, $language);
         }
+    }
+
+    private function parseOneFile($filename, $language)
+    {
+        $md = $this->getMdFileContents($filename, $language);
+
+        //$converter->convertToHtml('')
+    }
+
+    private function getMdFileContents($filename, $language)
+    {
+        echo $language.' - '.$filename.'<br />';
     }
 }
