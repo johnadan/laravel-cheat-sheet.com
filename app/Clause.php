@@ -12,6 +12,14 @@ class Clause extends Model
 
     public function sections()
     {
-    	return $this->belongsTo('App\Section');
+    	return $this->belongsTo('App\Section', 'section_id');
+    }
+
+    public function findClause($locale, $slug)
+    {
+    	return $this->where('language', $locale)
+    				->with('sections')
+            		->where('slug', $slug)
+                    ->first();
     }
 }

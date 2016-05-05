@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
+use App\Clause;
 
 class SheetController extends Controller
 {
@@ -45,9 +45,11 @@ class SheetController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($locale, $slug, Clause $clause)
     {
-        //
+        $clauseData = $clause->findClause($locale, $slug);
+
+        return view('sheet.show', compact('clauseData'));
     }
 
     /**

@@ -47,13 +47,11 @@ class ApiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($locale, $slug)
+    public function show($locale, $slug, Clause $clause)
     {
-        $clause = Clause::where('language', $locale)
-                                 ->where('slug', $slug)
-                                 ->first();
+        $clauseData = $clause->findClause($locale, $slug);
 
-        return response()->json($clause);
+        return response()->json($clauseData);
     }
 
     /**
