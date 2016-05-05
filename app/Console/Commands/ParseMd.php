@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use League\CommonMark\Converter;
 use \Htmldom;
+use App\Clause;
+use App\Section;
 
 /**
  * Parse MD files from GitHub.
@@ -28,7 +30,7 @@ class ParseMd extends Command
 
     protected $languages;
 
-    protected $filenames;
+    protected $sections;
 
     protected $repository;
 
@@ -45,9 +47,9 @@ class ParseMd extends Command
 
         $this->languages = config('csheet.languages');
 
-        $this->filenames = config('csheet.filenames');
-
         $this->repository = config('csheet.repository');
+
+        $this->sections = Section::all();
     }
 
     /**
@@ -79,14 +81,22 @@ class ParseMd extends Command
      */
     private function parseOneLanguage($language)
     {
-        foreach ($this->filenames as $filename) {
-            $this->parseOneFile($filename, $language);
+        foreach ($this->sections as $section) {
+            $data = $this->parseOneFile($section->filename, $language);
+
+            dd($data);
+            // Save clauses parsed from one file of one language
+            //$section->
+
         }
+
     }
 
     /**
      * Parse one file of given language.
      *
+     * @return array Array of parsed clauses from one file, ready
+     *         for inserting into a DB.
      */
     private function parseOneFile($filename, $language)
     {
@@ -99,9 +109,7 @@ class ParseMd extends Command
         $htmlExploded = explode('<hr />', $sourceHtml);
 
         // Parse clauses, passing HTML before [0] and after [1] hr tag
-        $clausesArray = $this->parseClauses($htmlExploded[0], $htmlExploded[1]);
-
-        //dd($clausesArray);
+        return $this->parseClauses($htmlExploded[0], $htmlExploded[1]);
     }
 
     /**
@@ -111,7 +119,11 @@ class ParseMd extends Command
      */
     private function getMdFileContents($filename, $language)
     {
-        return file_get_contents($this->repository.$language.'/'.$filename.'.md');
+        $filename = str_replace(' ', '%20', $filename);
+
+        $url = $this->repository.$language.'/'.$filename.'.md';
+
+        return file_get_contents($url);
     }
 
     /**
@@ -125,6 +137,7 @@ class ParseMd extends Command
 
         $html = new Htmldom($clauseList);
 
+        // Find all clauses by their tags.
         $allClauses = $html->find('p a');
 
         // Iterate over all clauses to get Html elements
@@ -132,7 +145,6 @@ class ParseMd extends Command
             // Adding resulting array into clauses array
             $clausesArray[] = $this->getHtmlDataFromClause($clauseLink, $descriptionList);
         }
-
         return $clausesArray;
     }
 
@@ -161,11 +173,11 @@ class ParseMd extends Command
         $description = $descriptionHtml->find('p a[name='.$href.']');
 
         // Link from description
-        $descriptionLink = $description[0]->next_sibling();
+        $link = $description[0]->next_sibling()->plaintext;
 
         // Description itself
-        $descriptionText = $description[0]->parent()->next_sibling();
+        $description = $description[0]->parent()->next_sibling()->plaintext;
 
-        return compact('clause', 'descriptionText', 'descriptionLink');
+        return compact('clause', 'description', 'link');
     }
 }
