@@ -8,6 +8,8 @@ class Clause extends Model
 {
     public $timestamps = false;
     
+    protected $fillable = ['clause', 'description', 'link', 'language'];
+
     public function sections()
     {
     	return $this->belongsTo('App\Section');

@@ -8,6 +8,7 @@ use League\CommonMark\Converter;
 use \Htmldom;
 use App\Clause;
 use App\Section;
+use DB;
 
 /**
  * Parse MD files from GitHub.
@@ -30,7 +31,11 @@ class ParseMd extends Command
 
     protected $languages;
 
+    protected $language;
+
     protected $sections;
+
+    protected $section;
 
     protected $repository;
 
@@ -50,6 +55,8 @@ class ParseMd extends Command
         $this->repository = config('csheet.repository');
 
         $this->sections = Section::all();
+
+        DB::statement('truncate clauses');
     }
 
     /**
@@ -71,7 +78,9 @@ class ParseMd extends Command
     private function parseMdFiles()
     {
         foreach ($this->languages as $language) {
-            $this->parseOneLanguage($language);
+            $this->language = $language;
+
+            $this->parseOneLanguage();
         }
     }
 
@@ -79,17 +88,13 @@ class ParseMd extends Command
      * Parse files of given language.
      *
      */
-    private function parseOneLanguage($language)
+    private function parseOneLanguage()
     {
         foreach ($this->sections as $section) {
-            $data = $this->parseOneFile($section->filename, $language);
+            $this->section = $section;
 
-            dd($data);
-            // Save clauses parsed from one file of one language
-            //$section->
-
+            $data = $this->parseOneFile();
         }
-
     }
 
     /**
@@ -98,10 +103,10 @@ class ParseMd extends Command
      * @return array Array of parsed clauses from one file, ready
      *         for inserting into a DB.
      */
-    private function parseOneFile($filename, $language)
+    private function parseOneFile()
     {
         // Get MD file contents.
-        $md = $this->getMdFileContents($filename, $language);
+        $md = $this->getMdFileContents();
 
         // Convert MD to HTML.
         $sourceHtml = $this->converter->convertToHtml($md);
@@ -117,11 +122,11 @@ class ParseMd extends Command
      *
      * @return string
      */
-    private function getMdFileContents($filename, $language)
+    private function getMdFileContents()
     {
-        $filename = str_replace(' ', '%20', $filename);
+        $filename = str_replace(' ', '%20', $this->section->filename);
 
-        $url = $this->repository.$language.'/'.$filename.'.md';
+        $url = $this->repository.$this->language.'/'.$filename.'.md';
 
         return file_get_contents($url);
     }
@@ -143,9 +148,12 @@ class ParseMd extends Command
         // Iterate over all clauses to get Html elements
         foreach ($allClauses as $clauseLink) {
             // Adding resulting array into clauses array
-            $clausesArray[] = $this->getHtmlDataFromClause($clauseLink, $descriptionList);
+            $data = $this->getHtmlDataFromClause($clauseLink, $descriptionList);
+
+            // Save data to a model
+            $clause = new Clause($data);
+            $this->section->clauses()->save($clause);
         }
-        return $clausesArray;
     }
 
     /**
@@ -178,6 +186,8 @@ class ParseMd extends Command
         // Description itself
         $description = $description[0]->parent()->next_sibling()->plaintext;
 
-        return compact('clause', 'description', 'link');
+        $language = $this->language;
+
+        return compact('clause', 'description', 'link', 'language');
     }
 }
