@@ -15,4 +15,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('api/v1/{locale}', 'ApiController');
+Route::resource('{locale}/api', 'ApiController');
