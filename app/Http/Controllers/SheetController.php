@@ -3,21 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Clause;
 
-class ApiController extends Controller
-{  
+use App\Http\Requests;
+
+class SheetController extends Controller
+{
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($locale)
+    public function index()
     {
-        $sheet = Clause::where('language', $locale)->get();
-
-        return response()->json($sheet);
+        //
     }
 
     /**
@@ -47,13 +45,9 @@ class ApiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($locale, $slug)
+    public function show($id)
     {
-        $clause = Clause::where('language', $locale)
-                                 ->where('slug', $slug)
-                                 ->first();
-
-        return response()->json($clause);
+        //
     }
 
     /**

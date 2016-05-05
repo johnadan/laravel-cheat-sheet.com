@@ -8,7 +8,7 @@ class Clause extends Model
 {
     public $timestamps = false;
     
-    protected $fillable = ['clause', 'description', 'link', 'language'];
+    protected $fillable = ['clause', 'description', 'link', 'language', 'slug'];
 
     public function sections()
     {

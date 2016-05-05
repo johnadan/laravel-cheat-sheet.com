@@ -16,3 +16,5 @@ Route::get('/', function () {
 });
 
 Route::resource('{locale}/api', 'ApiController');
+
+Route::resource('{locale}/sheet', 'SheetController');

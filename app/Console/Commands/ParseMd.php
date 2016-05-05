@@ -138,9 +138,11 @@ class ParseMd extends Command
      */
     private function parseClauses($clauseList, $descriptionList)
     {
-        $clausesArray = [];
-
+        // This contents HTML of part before hr tag
         $html = new Htmldom($clauseList);
+
+        // This contents HTML of part after hr tag
+        $descriptionHtml = new Htmldom($descriptionList);
 
         // Find all clauses by their tags.
         $allClauses = $html->find('p a');
@@ -148,7 +150,7 @@ class ParseMd extends Command
         // Iterate over all clauses to get Html elements
         foreach ($allClauses as $clauseLink) {
             // Adding resulting array into clauses array
-            $data = $this->getHtmlDataFromClause($clauseLink, $descriptionList);
+            $data = $this->getHtmlDataFromClause($clauseLink, $descriptionHtml);
 
             // Save data to a model
             $clause = new Clause($data);
@@ -162,11 +164,11 @@ class ParseMd extends Command
      * @return array Clause, text, link to documentation.
      */
 
-    private function getHtmlDataFromClause($clauseLink, $descriptionList)
+    private function getHtmlDataFromClause($clauseLink, $descriptionHtml)
     {
+        // This contents HTML of one clause
         $html = new Htmldom($clauseLink);
 
-        $descriptionHtml = new Htmldom($descriptionList);
 
         // This clause HTML
         $clauseHtml = $html->find('a')[0];
@@ -181,13 +183,15 @@ class ParseMd extends Command
         $description = $descriptionHtml->find('p a[name='.$href.']');
 
         // Link from description
-        $link = $description[0]->next_sibling()->plaintext;
+        $link = $description[0]->parent()->last_child()->href;
 
         // Description itself
         $description = $description[0]->parent()->next_sibling()->plaintext;
 
         $language = $this->language;
 
-        return compact('clause', 'description', 'link', 'language');
+        $slug = str_slug($clause);
+
+        return compact('clause', 'description', 'link', 'language', 'slug');
     }
 }
