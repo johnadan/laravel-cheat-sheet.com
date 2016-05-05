@@ -98,7 +98,8 @@ class ParseMd extends Command
 
         $htmlExploded = explode('<hr />', $sourceHtml);
 
-        $clausesArray = $this->parseClauses($htmlExploded[0]);
+        // Parse clauses, passing HTML before [0] and after [1] hr tag
+        $clausesArray = $this->parseClauses($htmlExploded[0], $htmlExploded[1]);
 
         //dd($clausesArray);
     }
@@ -113,19 +114,58 @@ class ParseMd extends Command
         return file_get_contents($this->repository.$language.'/'.$filename.'.md');
     }
 
-    private function parseClauses($htmlList)
+    /**
+     * Parse all clauses one by one.
+     *
+     * @return array Clauses array of arrays, ready for inserting to a DB
+     */
+    private function parseClauses($clauseList, $descriptionList)
     {
-        $html = new Htmldom($htmlList);
-
         $clausesArray = [];
 
-        $clausesArray = $html->find('p a');
+        $html = new Htmldom($clauseList);
 
-        foreach ($clausesArray as $clauseLink) {
-            $clause = new Htmldom($clauseLink);
-            echo $clause->find('a')[0]->innertext.' - ';
+        $allClauses = $html->find('p a');
+
+        // Iterate over all clauses to get Html elements
+        foreach ($allClauses as $clauseLink) {
+            // Adding resulting array into clauses array
+            $clausesArray[] = $this->getHtmlDataFromClause($clauseLink, $descriptionList);
         }
 
         return $clausesArray;
+    }
+
+    /**
+     * Gets Html of two elements.
+     *
+     * @return array Clause, text, link to documentation.
+     */
+
+    private function getHtmlDataFromClause($clauseLink, $descriptionList)
+    {
+        $html = new Htmldom($clauseLink);
+
+        $descriptionHtml = new Htmldom($descriptionList);
+
+        // This clause HTML
+        $clauseHtml = $html->find('a')[0];
+
+        // This clause 'href'
+        $href = $clauseHtml->href;
+
+        // This clause link contents
+        $clause = $clauseHtml->innertext;
+
+        // Find 'a' element in descriptions by it's 'name'
+        $description = $descriptionHtml->find('p a[name='.$href.']');
+
+        // Link from description
+        $descriptionLink = $description[0]->next_sibling();
+
+        // Description itself
+        $descriptionText = $description[0]->parent()->next_sibling();
+
+        return compact('clause', 'descriptionText', 'descriptionLink');
     }
 }
