@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Clause;
+use App\Section;
 
 class SheetController extends Controller
 {
@@ -13,9 +14,11 @@ class SheetController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($locale, Section $section)
     {
-        //
+        $sheetData = $section->getAllSheets($locale);
+
+        return view('sheet.index', compact('sheetData'));
     }
 
     /**
@@ -47,7 +50,7 @@ class SheetController extends Controller
      */
     public function show($locale, $slug, Clause $clause)
     {
-        $clauseData = $clause->findClause($locale, $slug);
+        $clauseData = $clause->getClause($locale, $slug);
 
         return view('sheet.show', compact('clauseData'));
     }

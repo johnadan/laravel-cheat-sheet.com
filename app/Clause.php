@@ -15,7 +15,7 @@ class Clause extends Model
     	return $this->belongsTo('App\Section', 'section_id');
     }
 
-    public function findClause($locale, $slug)
+    public function getClause($locale, $slug)
     {
     	return $this->where('language', $locale)
     				->with('sections')

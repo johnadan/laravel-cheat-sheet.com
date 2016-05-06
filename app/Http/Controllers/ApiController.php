@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Clause;
+use App\Section;
 
 class ApiController extends Controller
 {  
@@ -13,11 +14,11 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($locale)
+    public function index($locale, Section $section)
     {
-        $sheet = Clause::where('language', $locale)->get();
+        $sheetData = $section->getAllSheets($locale);
 
-        return response()->json($sheet);
+        return response()->json($sheetData);
     }
 
     /**
@@ -49,7 +50,7 @@ class ApiController extends Controller
      */
     public function show($locale, $slug, Clause $clause)
     {
-        $clauseData = $clause->findClause($locale, $slug);
+        $clauseData = $clause->getClause($locale, $slug);
 
         return response()->json($clauseData);
     }

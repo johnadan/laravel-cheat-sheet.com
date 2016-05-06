@@ -10,6 +10,13 @@ class Section extends Model
 
     public function clauses()
     {
-    	return $this->hasMany('App\Clause');
+    	return $this->hasMany('App\Clause', 'section_id');
+    }
+
+    public function getAllSheets($locale)
+    {
+    	return $this->with(['clauses' => function ($query) use($locale) {
+            $query->where('language', $locale);
+        }])->get();
     }
 }
