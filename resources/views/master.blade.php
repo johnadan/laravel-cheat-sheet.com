@@ -12,7 +12,7 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
-	<link rel="stylesheet" href="/css/{{ $theme or 'dark' }}.min.css">
+	<link rel="stylesheet" href="/css/{{ $theme or 'light' }}.min.css">
 	<link rel="stylesheet" href="/css/csheet.css">
 
 	<!--[if lt IE 9]>
@@ -47,13 +47,7 @@
                         <a href="#page-top"></a>
                     </li>
                     <li>
-                        <a href="#portfolio">Portfolio</a>
-                    </li>
-                    <li>
                         <a href="/about">About</a>
-                    </li>
-                    <li>
-                        <a href="#contact">Contact</a>
                     </li>
                 </ul>
             </div>

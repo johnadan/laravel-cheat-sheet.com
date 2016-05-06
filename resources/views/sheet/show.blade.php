@@ -1,18 +1,22 @@
 {{-- sheet.show --}}
 
+@extends('master')
 
-<div>
-{{ $clauseData->clause }}
+@section('content')
+	<div>
+		@if(!empty($clauseData->link))
+			<a href="{{ $clauseData->link }}">{{ $clauseData->clause }}</a>
+		@else
+			{{ $clauseData->clause }}
+		@endif
+	</div>
+
+	<div>
+	{{ $clauseData->description or '' }}
+	</div>
+
+	<div>
+	{{ $clauseData->sections->filename }}
 </div>
 
-<div>
-{{ $clauseData->description }}
-</div>
-
-<div>
-{{ $clauseData->link }}
-</div>
-
-<div>
-{{ $clauseData->section }}
-</div>
+@endsection

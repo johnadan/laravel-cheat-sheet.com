@@ -17,8 +17,8 @@ class Clause extends Model
 
     public function getClause($locale, $slug)
     {
-    	return $this->where('language', $locale)
-    				->with('sections')
+    	return $this->with('sections')->where('language', $locale)
+
             		->where('slug', $slug)
                     ->first();
     }
