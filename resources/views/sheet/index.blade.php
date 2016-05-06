@@ -2,12 +2,12 @@
 
 
 @foreach($sheetData as $sheet)
-	{{ $sheet->filename }}
+	<h1>{{ $sheet->filename }}</h1>
 
 	@foreach($sheet->clauses as $clause)
 
 		<div>
-		{{ $clause->clause }}
+		<a href="{{ $clause->link }}">{{ $clause->clause }}<a/>
 		</div>
 
 		<div>
@@ -15,15 +15,9 @@
 		</div>
 
 		<div>
-		{{ $clause->link }}
-		</div>
-
-		<div>
-		{{ $clause->section }}
+		<br />
 		</div>
 
 	@endforeach
 
 @endforeach
-
-
