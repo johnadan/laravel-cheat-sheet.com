@@ -11,10 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::resource('{locale}/api', 'ApiController');
 
 Route::resource('{locale}/sheet', 'SheetController');

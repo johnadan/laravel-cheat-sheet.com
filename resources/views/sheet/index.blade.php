@@ -1,5 +1,8 @@
 {{-- sheet.show --}}
 
+@extends('master')
+
+@section('content')
 
 @foreach($sheetData as $sheet)
 	<h1>{{ $sheet->filename }}</h1>
@@ -7,11 +10,11 @@
 	@foreach($sheet->clauses as $clause)
 
 		<div>
-		<a href="{{ $clause->link }}">{{ $clause->clause }}<a/>
+		<a href="{{ $clause->link }}">{{ $clause->clause }}</a>
 		</div>
 
 		<div>
-		{{ $clause->description }}
+		{{ $clause->description === 'NA' ? '' : $clause->description }}
 		</div>
 
 		<div>
@@ -21,3 +24,5 @@
 	@endforeach
 
 @endforeach
+
+@endsection
