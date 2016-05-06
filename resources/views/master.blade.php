@@ -37,7 +37,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#page-top">Laravel Cheat Sheet</a>
+                <a class="navbar-brand" href="#page-top">{{ trans('messages.laravel-cheat-sheet') }}</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -47,7 +47,7 @@
                         <a href="#page-top"></a>
                     </li>
                     <li>
-                        <a href="/about">About</a>
+                        <a href="/{{ App::getLocale() }}/about">{{ trans('messages.about') }}</a>
                     </li>
                 </ul>
             </div>
@@ -56,18 +56,11 @@
         <!-- /.container-fluid -->
     </nav>
 
-    <!-- Header -->
-    <header id="header">
-        <div class="container">
-            <div class="row">
+	<div id="content">
+		@section('content')
 
-            </div>
-        </div>
-    </header>
-
-@section('content')
-
-@show
+		@show
+	</div>
 
 
     <!-- Footer -->

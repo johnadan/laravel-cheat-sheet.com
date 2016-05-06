@@ -16,6 +16,8 @@ class SheetController extends Controller
      */
     public function index($locale, Section $section)
     {
+        \App::setLocale($locale);
+
         $sheetData = $section->getAllSheets($locale);
 
         return view('sheet.index', compact('sheetData'));
@@ -50,6 +52,8 @@ class SheetController extends Controller
      */
     public function show($locale, $slug, Clause $clause)
     {
+        \App::setLocale($locale);
+
         $clauseData = $clause->getClause($locale, $slug);
 
         return view('sheet.show', compact('clauseData'));
