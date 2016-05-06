@@ -44,10 +44,18 @@ class ParseMd extends Command
      *
      * @return void
      */
-    public function __construct(Converter $converter)
+    public function __construct()
     {
         parent::__construct();
+    }
 
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle(Converter $converter)
+    {
         $this->converter = $converter;
 
         $this->languages = config('csheet.languages');
@@ -57,17 +65,8 @@ class ParseMd extends Command
         $this->sections = Section::all();
 
         DB::statement('truncate clauses');
-    }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
         $this->parseMdFiles();
-
     }
 
     /**

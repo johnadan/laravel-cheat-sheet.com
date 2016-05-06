@@ -24,7 +24,7 @@
 
 <body id="page-top" class="index">
 
-
+@choice()
 
     <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -37,7 +37,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#page-top">{{ trans('messages.laravel-cheat-sheet') }}</a>
+                <a class="navbar-brand" href="#page-top">@lang('messages.laravel-cheat-sheet')</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -47,7 +47,7 @@
                         <a href="#page-top"></a>
                     </li>
                     <li>
-                        <a href="/{{ App::getLocale() }}/about">{{ trans('messages.about') }}</a>
+                        <a href="/{{ App::getLocale() }}/about">@lang('messages.about')</a>
                     </li>
                 </ul>
             </div>
