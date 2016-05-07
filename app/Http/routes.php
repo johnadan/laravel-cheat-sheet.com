@@ -1,4 +1,5 @@
 <?php
+set_time_limit(20000);
 
 /*
 |--------------------------------------------------------------------------
@@ -14,3 +15,8 @@
 Route::resource('{locale}/api', 'ApiController');
 
 Route::resource('{locale}/sheet', 'SheetController');
+
+Route::get('test', function(){
+	$number = new Number();
+	echo $number->getMinimum();
+});

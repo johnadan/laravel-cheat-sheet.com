@@ -39,6 +39,8 @@ class ParseMd extends Command
 
     protected $repository;
 
+    protected $clauseLink;
+
     /**
      * Create a new command instance.
      *
@@ -75,19 +77,6 @@ class ParseMd extends Command
      * @return mixed
      */
     private function parseMdFiles()
-    {
-        foreach ($this->languages as $language) {
-            $this->language = $language;
-
-            $this->parseOneLanguage();
-        }
-    }
-
-    /**
-     * Parse files of given language.
-     *
-     */
-    private function parseOneLanguage()
     {
         foreach ($this->sections as $section) {
             $this->section = $section;
@@ -133,13 +122,10 @@ class ParseMd extends Command
      *
      * @return array Clauses array of arrays, ready for inserting to a DB
      */
-    private function parseClauses($clauseList, $descriptionList)
+    private function parseClauses($sourceHtml)
     {
         // This contents HTML of part before hr tag
-        $html = new Htmldom($clauseList);
-
-        // This contents HTML of part after hr tag
-        $descriptionHtml = new Htmldom($descriptionList);
+        $html = new Htmldom($sourceHtml);
 
         // Find all clauses by their tags.
         $allClauses = $html->find('p a');
@@ -147,11 +133,13 @@ class ParseMd extends Command
         // Iterate over all clauses to get Html elements
         foreach ($allClauses as $clauseLink) {
             // Adding resulting array into clauses array
-            $data = $this->getHtmlDataFromClause($clauseLink, $descriptionHtml);
-
+            $this->clauseLink = $clauseLink;
+            $data = $this->parseClause();
+/*
             // Save data to a model
             $clause = new Clause($data);
             $this->section->clauses()->save($clause);
+*/
         }
     }
 
@@ -161,12 +149,15 @@ class ParseMd extends Command
      * @return array Clause, text, link to documentation.
      */
 
-    private function getHtmlDataFromClause($clauseLink, $descriptionHtml)
+    private function parseClause()
     {
-        // This contents HTML of one clause
-        $html = new Htmldom($clauseLink);
+        foreach ($this->languages as $language) {
+            $this->parseOneLanguageDescription($language);
+        }
 
 
+        //$clauseLink->parent()->next_sibling()->plaintext);
+/*
         // This clause HTML
         $clauseHtml = $html->find('a')[0];
 
@@ -190,5 +181,25 @@ class ParseMd extends Command
         $slug = str_slug($clause);
 
         return compact('clause', 'description', 'link', 'language', 'slug');
+        */
+    }
+
+
+    /**
+     * Parse files of given language.
+     *
+     */
+    private function parseOneLanguageDescription($language)
+    {
+        $clauseDescriptionLang = $this->clauseLink->parent()->next_sibling()->plaintext;
+
+        $langHtml = substr($clauseDescriptionLang, 0, 2);
+
+        $descriptionHtml = substr($clauseDescriptionLang, 3);
+
+        if($langHtml === $language)
+        echo($langHtml.' ---- '.$descriptionHtml);
+        //echo($clauseDescriptionLang);
+        exit;
     }
 }
