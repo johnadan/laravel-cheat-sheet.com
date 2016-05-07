@@ -14,7 +14,7 @@ class SheetController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($locale, Section $section)
+    public function index(Request $request, $locale, Section $section)
     {
         \App::setLocale($locale);
 

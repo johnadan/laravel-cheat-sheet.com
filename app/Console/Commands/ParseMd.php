@@ -110,10 +110,8 @@ class ParseMd extends Command
         // Convert MD to HTML.
         $sourceHtml = $this->converter->convertToHtml($md);
 
-        $htmlExploded = explode('<hr />', $sourceHtml);
-
         // Parse clauses, passing HTML before [0] and after [1] hr tag
-        return $this->parseClauses($htmlExploded[0], $htmlExploded[1]);
+        return $this->parseClauses($sourceHtml);
     }
 
     /**
@@ -125,7 +123,7 @@ class ParseMd extends Command
     {
         $filename = str_replace(' ', '%20', $this->section->filename);
 
-        $url = $this->repository.$this->language.'/'.$filename.'.md';
+        $url = $this->repository.$filename.'.md';
 
         return file_get_contents($url);
     }

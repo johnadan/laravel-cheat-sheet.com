@@ -24,8 +24,6 @@
 
 <body id="page-top" class="index">
 
-@choice()
-
     <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
