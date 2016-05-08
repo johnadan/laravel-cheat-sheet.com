@@ -74,7 +74,7 @@ class ParseMd extends Command
     }
 
     /**
-     * Parse all MD files to DB.
+     * Parse all MD files.
      *
      * @return mixed
      */
@@ -88,7 +88,7 @@ class ParseMd extends Command
     }
 
     /**
-     * Parse one file of given language.
+     * Parse one file.
      *
      * @return array Array of parsed clauses from one file, ready
      *         for inserting into a DB.
@@ -136,6 +136,7 @@ class ParseMd extends Command
         foreach ($allClauses as $clauseLink) {
             // Adding resulting array into clauses array
             $this->clauseLink = $clauseLink;
+            
             $data = $this->parseClause();
         }
     }
