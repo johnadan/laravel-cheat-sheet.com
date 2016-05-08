@@ -1,4 +1,4 @@
-{{-- sheet.show --}}
+{{-- sheet.index --}}
 
 @extends('master')
 
@@ -10,15 +10,16 @@
 	@foreach($sheet->clauses as $clause)
 
 		<div>
-		<a href="{{ $clause->link }}">{{ $clause->clause }}</a>
+		{{-- @parent display incorrectly --}}
+		<a href="{{ $clause->link }}">@if ($clause->clause !== '@parent')
+			{{ $clause->clause }}
+		@else
+			{{ '&#64;parent' }}	 
+		@endif</a>
 		</div>
 
-		<div>
+		<div class="desc">
 		{{ $clause->description === 'NA' ? '' : $clause->description }}
-		</div>
-
-		<div>
-		<br />
 		</div>
 
 	@endforeach
