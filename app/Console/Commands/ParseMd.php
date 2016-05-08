@@ -175,6 +175,7 @@ class ParseMd extends Command
             // Save data to a model
             $clause = new Clause([
                     'clause' => $this->clauseLink->plaintext,
+                    'link' => $this->clauseLink->href,
                     'language' => $language,
                     'description' => $description,
                     'slug' => str_slug($this->clauseLink->plaintext)
