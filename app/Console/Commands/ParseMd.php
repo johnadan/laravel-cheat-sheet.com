@@ -168,12 +168,15 @@ class ParseMd extends Command
 
         $clauseDescriptionLang = $this->currentElement->plaintext;
 
+        $description = substr($clauseDescriptionLang, 3) ?
+                       substr($clauseDescriptionLang, 3) : '';
+
         if (substr($clauseDescriptionLang, 0, 2) === $language) {
             // Save data to a model
             $clause = new Clause([
                     'clause' => $this->clauseLink->plaintext,
                     'language' => $language,
-                    'description' => substr($clauseDescriptionLang, 3),
+                    'description' => $description,
                     'slug' => str_slug($this->clauseLink->plaintext)
                 ]);
 

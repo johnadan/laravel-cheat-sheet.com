@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Clause;
 use App\Section;
+use App;
 
 class SheetController extends Controller
 {
@@ -16,7 +17,7 @@ class SheetController extends Controller
      */
     public function index(Request $request, $locale, Section $section)
     {
-        \App::setLocale($locale);
+        App::setLocale($locale);
 
         $sheetData = $section->getAllSheets($locale);
 
