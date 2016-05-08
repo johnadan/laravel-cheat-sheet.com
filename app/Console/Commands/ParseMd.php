@@ -41,6 +41,8 @@ class ParseMd extends Command
 
     protected $clauseLink;
 
+    protected $currentElement;
+
     /**
      * Create a new command instance.
      *
@@ -135,11 +137,6 @@ class ParseMd extends Command
             // Adding resulting array into clauses array
             $this->clauseLink = $clauseLink;
             $data = $this->parseClause();
-/*
-            // Save data to a model
-            $clause = new Clause($data);
-            $this->section->clauses()->save($clause);
-*/
         }
     }
 
@@ -151,37 +148,12 @@ class ParseMd extends Command
 
     private function parseClause()
     {
+        $this->currentElement = $this->clauseLink->parent();
+
+        // Iterate through languages
         foreach ($this->languages as $language) {
-            $this->parseOneLanguageDescription($language);
+            $this->parseOneLanguage($language);
         }
-
-
-        //$clauseLink->parent()->next_sibling()->plaintext);
-/*
-        // This clause HTML
-        $clauseHtml = $html->find('a')[0];
-
-        // This clause 'href'
-        $href = $clauseHtml->href;
-
-        // This clause link contents
-        $clause = $clauseHtml->innertext;
-
-        // Find 'a' element in descriptions by it's 'name'
-        $description = $descriptionHtml->find('p a[name='.$href.']');
-
-        // Link from description
-        $link = $description[0]->parent()->last_child()->href;
-
-        // Description itself
-        $description = $description[0]->parent()->next_sibling()->plaintext;
-
-        $language = $this->language;
-
-        $slug = str_slug($clause);
-
-        return compact('clause', 'description', 'link', 'language', 'slug');
-        */
     }
 
 
@@ -189,17 +161,22 @@ class ParseMd extends Command
      * Parse files of given language.
      *
      */
-    private function parseOneLanguageDescription($language)
+    private function parseOneLanguage($language)
     {
-        $clauseDescriptionLang = $this->clauseLink->parent()->next_sibling()->plaintext;
+        $this->currentElement = $this->currentElement->next_sibling();
 
-        $langHtml = substr($clauseDescriptionLang, 0, 2);
+        $clauseDescriptionLang = $this->currentElement->plaintext;
 
-        $descriptionHtml = substr($clauseDescriptionLang, 3);
+        if (substr($clauseDescriptionLang, 0, 2) === $language) {
+            // Save data to a model
+            $clause = new Clause([
+                    'clause' => $this->clauseLink->plaintext,
+                    'language' => $language,
+                    'description' => substr($clauseDescriptionLang, 3),
+                    'slug' => str_slug($this->clauseLink->plaintext)
+                ]);
 
-        if($langHtml === $language)
-        echo($langHtml.' ---- '.$descriptionHtml);
-        //echo($clauseDescriptionLang);
-        exit;
+            $this->section->clauses()->save($clause);
+        }
     }
 }
