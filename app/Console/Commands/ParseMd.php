@@ -89,9 +89,6 @@ class ParseMd extends Command
 
     /**
      * Parse one file.
-     *
-     * @return array Array of parsed clauses from one file, ready
-     *         for inserting into a DB.
      */
     private function parseOneFile()
     {
@@ -101,8 +98,20 @@ class ParseMd extends Command
         // Convert MD to HTML.
         $sourceHtml = $this->converter->convertToHtml($md);
 
-        // Parse clauses, passing HTML before [0] and after [1] hr tag
-        return $this->parseClauses($sourceHtml);
+        // Parse clauses
+        $this->parseClauses($sourceHtml);
+        
+        return;
+    }
+
+    /**
+     * Reverse parsing, because of wrong parsing of <code>.
+     *
+     * @return string
+     */
+    private function reverseHtmlSpaces($html)
+    {
+        return str_replace('ё', '&nbsp;', $html);
     }
 
     /**
@@ -127,7 +136,7 @@ class ParseMd extends Command
     private function parseClauses($sourceHtml)
     {
         // This contents HTML of part before hr tag
-        $html = new Htmldom($sourceHtml);
+        $html = new Htmldom(nl2br($sourceHtml));
 
         // Find all clauses by their tags.
         $allClauses = $html->find('p a');
@@ -164,22 +173,32 @@ class ParseMd extends Command
      */
     private function parseOneLanguage($language)
     {
-        $this->currentElement = $this->currentElement->next_sibling();
+        $this->currentElement = $this->currentElement
+                                ->next_sibling()
+                                ->next_sibling();
 
-        $clauseDescriptionLang = $this->currentElement->plaintext;
+        $clauseLang = $this->currentElement->plaintext;
 
-        $description = substr($clauseDescriptionLang, 3) ?
-                       substr($clauseDescriptionLang, 3) : '';
+        $this->currentElement = $this->currentElement
+                                ->next_sibling()
+                                ->next_sibling();
 
-        if (substr($clauseDescriptionLang, 0, 2) === $language) {
+        $desc = trim($this->currentElement->innertext);
+
+        // Small adjustments to <code> tags
+        $desc = str_replace('<code>', '<code> ', $desc);
+
+        $desc = str_replace('<br /> </code>', '</code>', $desc);
+
+        if ($clauseLang === $language) {
             // Save data to a model
             $clause = new Clause([
-                    'clause' => $this->clauseLink->plaintext,
-                    'link' => $this->clauseLink->href,
-                    'language' => $language,
-                    'description' => $description,
-                    'slug' => str_slug($this->clauseLink->plaintext)
-                ]);
+                'clause' => $this->clauseLink->plaintext,
+                'link' => $this->clauseLink->href,
+                'language' => $language,
+                'description' => $desc,
+                'slug' => str_slug($this->clauseLink->plaintext)
+            ]);
 
             $this->section->clauses()->save($clause);
         }

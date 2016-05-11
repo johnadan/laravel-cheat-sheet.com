@@ -19,7 +19,7 @@
 		</div>
 
 		<div class="desc">
-		{{ $clause->description === 'NA' ? '' : $clause->description }}
+		{!! $clause->description === 'NA' ? '' : $clause->description !!}
 		</div>
 
 	@endforeach
